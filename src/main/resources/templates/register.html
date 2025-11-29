@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #e9f2ff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .register-container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        width: 350px;
+        text-align: center;
+    }
+    h2 { margin-bottom: 20px; }
+    .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box; /* Важно за padding */
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    /* Стил за грешките */
+    .error-msg {
+        color: red;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+    button {
+        width: 100%;
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+    .link {
+        margin-top: 15px;
+        display: block;
+        text-decoration: none;
+        color: #007bff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="register-container">
+  <h2>Регистрация</h2>
+
+  <form th:action="@{/users/register}" th:object="${userRegisterBindingModel}" method="post">
+
+    <!-- Username -->
+    <div class="form-group">
+      <label for="username">Потребителско име:</label>
+      <input th:field="*{username}" id="username" type="text" placeholder="Въведете име"/>
+      <!-- Тук се показват грешките (заето име, късо име) -->
+      <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-msg">Username Error</div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Имейл:</label>
+      <input th:field="*{email}" id="email" type="email" placeholder="Въведете имейл"/>
+      <!-- Грешка за зает имейл -->
+      <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-msg">Email Error</div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Парола:</label>
+      <input th:field="*{password}" id="password" type="password" placeholder="Въведете парола"/>
+      <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-msg">Password Error</div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="confirmPassword">Потвърди парола:</label>
+      <input th:field="*{confirmPassword}" id="confirmPassword" type="password" placeholder="Повторете паролата"/>
+      <!-- Грешка за несъвпадащи пароли -->
+      <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="error-msg">Confirm Password Error</div>
+    </div>
+
+    <div>
+      <button type="submit">Регистрация</button>
+    </div>
+
+    <a href="/users/login" class="link">Вече имаш акаунт? Влез тук</a>
+  </form>
+</div>
+
+</body>
+</html>
