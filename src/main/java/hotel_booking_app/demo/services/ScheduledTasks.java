@@ -13,7 +13,6 @@ public class ScheduledTasks {
         this.reservationRepository = reservationRepository;
     }
 
-    // Изпълнява се на всеки 60 секунди
     @Scheduled(cron = "0 * * * * *")
     public void reportCurrentTime() {
         long count = reservationRepository.count();

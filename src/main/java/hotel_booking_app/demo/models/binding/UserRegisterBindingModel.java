@@ -9,7 +9,7 @@ public class UserRegisterBindingModel {
 
     @NotBlank(message = "Потребителското име е задължително!")
     @Size(min = 3, max = 20, message = "Потребителското име трябва да бъде от 3 до 20 символа!")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Потребителското име трябва да съдържа само латински букви и цифри!")
+    @Pattern(regexp = "^[a-zA-Z0-9_.-]+$", message = "Потребителското име трябва да съдържа само латински букви и цифри!")
     private String username;
 
     @NotBlank(message = "Имейлът е задължителен!")
@@ -20,7 +20,7 @@ public class UserRegisterBindingModel {
     @Size(min = 8, message = "Паролата трябва да е поне с 8 символа!")
     @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{8,}$",
-            message = "Паролата трябва да е поне 8 символа и да съдържа поне една главна буква, цифра и символ!"
+            message = "Паролата трябва да съдържа поне една главна буква, цифра и символ!"
     )
     private String password;
 
