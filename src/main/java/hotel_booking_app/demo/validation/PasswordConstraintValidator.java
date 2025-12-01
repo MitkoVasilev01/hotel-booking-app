@@ -23,12 +23,10 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
             return false;
         }
 
-        // Проверка за сложност
         if (!COMPLEXITY_PATTERN.matcher(password).matches()) {
             return false;
         }
 
-        // Проверка за забранени последователности
         String lower = password.toLowerCase();
         for (String seq : FORBIDDEN_SEQUENCES) {
             if (lower.contains(seq)) {

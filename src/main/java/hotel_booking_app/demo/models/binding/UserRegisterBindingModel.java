@@ -30,7 +30,6 @@ public class UserRegisterBindingModel {
     public UserRegisterBindingModel() {
     }
 
-    // getters/setters
     public String getUsername() {
         return username;
     }
