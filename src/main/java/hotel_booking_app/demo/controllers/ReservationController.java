@@ -1,4 +1,4 @@
-package hotel_booking_app.demo.controllers; // <--- Увери се, че това съвпада с папката ти!
+package hotel_booking_app.demo.controllers;
 
 import hotel_booking_app.demo.entities.Hotel;
 import hotel_booking_app.demo.entities.Reservation;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.security.Principal;
 import java.util.UUID;
 
-@Controller // <--- БЕЗ ТОВА SPRING НЕ ВИЖДА КЛАСА
+@Controller
 @RequestMapping("/reservations")
 public class ReservationController {
 
@@ -34,17 +34,13 @@ public class ReservationController {
     @PostMapping("/create")
     public String createReservation(@ModelAttribute ReservationBindingModel model, Principal principal) {
 
-        System.out.println("✅ КОНТРОЛЕРЪТ Е НАМЕРЕН! Започва резервация...");
 
-        // 1. Проверка на user
         User user = userService.findByName(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // 2. Проверка на хотел
         Hotel hotel = hotelService.getHotelById(model.getHotelId())
                 .orElseThrow(() -> new IllegalArgumentException("Hotel not found"));
 
-        // 3. Създаване на обект
         Reservation reservation = new Reservation();
         reservation.setUser(user);
         reservation.setHotel(hotel);
@@ -52,12 +48,13 @@ public class ReservationController {
         reservation.setEndDate(model.getEndDate());
         reservation.setStatus(BookingStatus.PENDING);
 
-        // 4. Запис в базата
+        long days = java.time.temporal.ChronoUnit.DAYS.between(model.getStartDate(), model.getEndDate());
+        if (days < 1) days = 1; // Защита
+
+        double total = days * hotel.getPricePerNight();
+
         reservationService.createReservation(reservation);
 
-        System.out.println("✅ РЕЗЕРВАЦИЯТА Е ЗАПИСАНА В БАЗАТА!");
-
-        // Тъй като още нямаме профил страница, временно те пращам в началната
         return "redirect:/users/profile";
     }
     @PostMapping("/pay/{id}")

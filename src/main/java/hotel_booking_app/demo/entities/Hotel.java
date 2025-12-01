@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.hibernate.annotations.JdbcTypeCode; // <--- Импортни това
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.*;
@@ -17,7 +17,7 @@ public class Hotel {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @JdbcTypeCode(SqlTypes.VARCHAR) // <--- ТОВА Е КЛЮЧЪТ! Прави колоната VARCHAR(36)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
 
     private String name;
@@ -26,11 +26,11 @@ public class Hotel {
     @Enumerated(EnumType.STRING)
     private HotelCategory category;
 
-    @Column(columnDefinition = "TEXT") // За да събере дълги линкове
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Review> reviews = new ArrayList<>(); // Инициализираме го, за да не е null
+    private List<Review> reviews = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "hotel_amenities", joinColumns = @JoinColumn(name = "hotel_id"))
@@ -39,14 +39,16 @@ public class Hotel {
 
     private String address;
 
-    @Column(columnDefinition = "TEXT") // Позволява дълъг текст
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    // Списък за допълнителни снимки (Галерия)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "hotel_images", joinColumns = @JoinColumn(name = "hotel_id"))
     @Column(name = "image_url")
     private Set<String> galleryImages = new HashSet<>();
+
+    @Column(nullable = false)
+    private Double pricePerNight;
 
     public Hotel() {
 
@@ -107,10 +109,6 @@ public class Hotel {
         this.reviews = reviews;
     }
 
-
-
-
-
     public String getAddress() {
         return address;
     }
@@ -141,5 +139,13 @@ public class Hotel {
 
     public void setGalleryImages(Set<String> galleryImages) {
         this.galleryImages = galleryImages;
+    }
+
+    public Double getPricePerNight() {
+        return pricePerNight;
+    }
+
+    public void setPricePerNight(Double pricePerNight) {
+        this.pricePerNight = pricePerNight;
     }
 }

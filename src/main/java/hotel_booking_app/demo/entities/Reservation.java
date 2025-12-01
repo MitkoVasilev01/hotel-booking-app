@@ -29,6 +29,8 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
+    private Double totalPrice;
+
     public Reservation() {}
 
     public Reservation(User user, Hotel hotel, LocalDate startDate, LocalDate endDate, BookingStatus status) {
@@ -85,5 +87,17 @@ public class Reservation {
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public long getDays() {
+        if (startDate == null || endDate == null) return 0;
+        return java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+    }
+
+    public double getTotalPrice() {
+        if (hotel == null) return 0.0;
+        long days = getDays();
+        if (days < 1) days = 1; // Поне 1 нощувка
+        return days * hotel.getPricePerNight();
     }
 }

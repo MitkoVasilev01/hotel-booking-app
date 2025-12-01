@@ -34,11 +34,11 @@
     input {
         width: 100%;
         padding: 10px;
-        box-sizing: border-box; /* Важно за padding */
+        box-sizing: border-box;
         border: 1px solid #ddd;
         border-radius: 5px;
     }
-    /* Стил за грешките */
+
     .error-msg {
         color: red;
         font-size: 0.85rem;
@@ -72,34 +72,27 @@
 
   <form th:action="@{/users/register}" th:object="${userRegisterBindingModel}" method="post">
 
-    <!-- Username -->
     <div class="form-group">
       <label for="username">Потребителско име:</label>
       <input th:field="*{username}" id="username" type="text" placeholder="Въведете име"/>
-      <!-- Тук се показват грешките (заето име, късо име) -->
       <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-msg">Username Error</div>
     </div>
 
-    <!-- Email -->
     <div class="form-group">
       <label for="email">Имейл:</label>
       <input th:field="*{email}" id="email" type="email" placeholder="Въведете имейл"/>
-      <!-- Грешка за зает имейл -->
       <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-msg">Email Error</div>
     </div>
 
-    <!-- Password -->
     <div class="form-group">
       <label for="password">Парола:</label>
       <input th:field="*{password}" id="password" type="password" placeholder="Въведете парола"/>
       <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-msg">Password Error</div>
     </div>
 
-    <!-- Confirm Password -->
     <div class="form-group">
       <label for="confirmPassword">Потвърди парола:</label>
       <input th:field="*{confirmPassword}" id="confirmPassword" type="password" placeholder="Повторете паролата"/>
-      <!-- Грешка за несъвпадащи пароли -->
       <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="error-msg">Confirm Password Error</div>
     </div>
 

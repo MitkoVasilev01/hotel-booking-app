@@ -19,7 +19,7 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            position: sticky; /* Залепва се горе при скролване */
+            position: sticky;
             top: 20px;
         }
         .review-card {
@@ -27,7 +27,6 @@
             border-left: 4px solid #0d6efd;
             margin-bottom: 15px;
         }
-        /* Стиловете за навигацията (същите като в Home) */
         .navbar-nav { align-items: center; gap: 15px; }
         .nav-item .nav-link { color: white !important; font-weight: 500; padding: 8px 15px; border-radius: 5px; transition: all 0.3s ease; }
         .nav-item .nav-link:hover { background-color: #0d6efd; color: white; transform: translateY(-2px); }
@@ -36,7 +35,6 @@
 </head>
 <body>
 
-<!-- НАВИГАЦИЯ (Копирана от Home за консистентност) -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
         <a class="navbar-brand" href="/"><i class="fas fa-hotel"></i> HotelApp</a>
@@ -61,15 +59,12 @@
 
 <div class="container mb-5">
     <div class="row">
-        <!-- ЛЯВА КОЛОНА: Информация и Ревюта -->
         <div class="col-md-8">
-            <!-- Снимка -->
             <img th:src="${hotel.imageUrl != null} ? ${hotel.imageUrl} : 'https://loremflickr.com/800/400/hotel'"
                  class="hotel-header-img mb-4" alt="Hotel Image">
 
             <div class="row g-2 mb-4">
                 <div class="col-md-3" th:each="img : ${hotel.galleryImages}">
-                    <!-- Добавяме onclick event, който вика нашата JS функция -->
                     <img th:src="${img}"
                          class="img-fluid rounded shadow-sm hotel-gallery-img"
                          style="height: 100px; width: 100%; object-fit: cover; cursor: pointer; transition: transform 0.2s;"
@@ -79,23 +74,22 @@
                 </div>
             </div>
 
-
-            <!-- Заглавие и Локация -->
             <div class="d-flex justify-content-between align-items-center">
-                <h1 th:text="${hotel.name}">Hotel Name</h1>
-                <span class="badge bg-warning text-dark fs-6" th:text="${hotel.category}">Category</span>
-            </div>
+                <div>
+                    <h1 th:text="${hotel.name}" class="d-inline-block me-2">Hotel Name</h1>
+                    <span class="badge bg-warning text-dark fs-6 align-middle" th:text="${hotel.category}">Category</span>
+                </div>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               th:href="@{/admin/hotels/edit/{id}(id=${hotel.id})}"
+               class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-edit"></i> Редактирай
+            </a>
+        </div>
 
             <p class="text-muted fs-5"><i class="fas fa-map-marker-alt text-danger"></i> <span th:text="${hotel.address != null} ? ${hotel.address} + ', ' + ${hotel.location} : ${hotel.location}">Location</span></p>
 
-            <!-- КАРТА (Google Maps Iframe) -->
             <div class="card mb-4 shadow-sm border-0 overflow-hidden">
-                <!--
-                   th:src изгражда линк към Google Maps.
-                   q=... е заявката за търсене. Комбинираме името и локацията.
-                   z=15 е нивото на приближаване (Zoom).
-                   output=embed казва на Google да върне карта за вграждане.
-                -->
                 <iframe
                         width="100%"
                         height="300"
@@ -106,16 +100,13 @@
             </div>
             <hr>
 
-            <!-- Описание (Тъй като нямаме поле Description в базата, слагаме статичен текст) -->
             <h4>За хотела</h4>
             <p class="text-secondary">
                 <span th:text="${hotel.description}"></span>
 
             <hr>
 
-            <!-- РЕВЮТА -->
             <h4><i class="fas fa-comments text-primary"></i> Отзиви от гости</h4>
-            <!-- --- ФОРМА ЗА ДОБАВЯНЕ НА РЕВЮ (Само за логнати) --- -->
             <div sec:authorize="isAuthenticated()" class="card bg-light mb-4 shadow-sm border-0">
                 <div class="card-body">
                     <h5 class="card-title">Остави своя отзив</h5>
@@ -123,13 +114,12 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Оценка:</label>
-                            <!-- Опростен избор с Select -->
                             <select name="rating" class="form-select w-25" required>
-                                <option value="5">⭐⭐⭐⭐⭐ (5 - Отлично)</option>
-                                <option value="4">⭐⭐⭐⭐ (4 - Много добро)</option>
-                                <option value="3">⭐⭐⭐ (3 - Добро)</option>
-                                <option value="2">⭐⭐ (2 - Средно)</option>
-                                <option value="1">⭐ (1 - Лошо)</option>
+                                <option value="5">⭐⭐⭐⭐⭐ (Отлично)</option>
+                                <option value="4">⭐⭐⭐⭐ (Много добро)</option>
+                                <option value="3">⭐⭐⭐ (Добро)</option>
+                                <option value="2">⭐⭐ (Средно)</option>
+                                <option value="1">⭐ (Лошо)</option>
                             </select>
                         </div>
 
@@ -143,23 +133,19 @@
                 </div>
             </div>
 
-            <!-- Съобщение за НЕлогнати потребители -->
             <div sec:authorize="!isAuthenticated()" class="alert alert-secondary mb-4">
                 Искате да споделите мнение? <a href="/users/login" class="fw-bold">Влезте в профила си</a>, за да оставите ревю.
             </div>
 
             <hr>
 
-            <!-- Ако няма ревюта -->
             <div th:if="${hotel.reviews.empty}" class="alert alert-light border">
                 Все още няма отзиви за този хотел. Бъдете първият!
             </div>
 
-            <!-- Списък с ревюта -->
             <div th:each="review : ${hotel.reviews}" class="card review-card p-3">
                 <div class="d-flex justify-content-between">
                     <strong th:text="${review.user.name}">User Name</strong>
-                    <!-- Показване на звездички според рейтинга -->
                     <div class="text-warning" th:if="${review.rating > 0}">
                         <span th:each="i : ${#numbers.sequence(1, review.rating)}"><i class="fas fa-star"></i></span>
                     </div>
@@ -169,20 +155,20 @@
 
         </div>
 
-        <!-- ДЯСНА КОЛОНА: Каре за резервация -->
-        <!-- ДЯСНА КОЛОНА: Каре за резервация -->
         <div class="col-md-4">
             <div class="booking-card">
                 <h4 class="mb-3">Резервирай сега</h4>
                 <p class="text-muted">Цени започващи от:</p>
-                <h2 class="text-success fw-bold">120 лв. <small class="fs-6 text-muted">/ нощувка</small></h2>
+                <h2 class="text-success fw-bold">
+                    <span th:text="${#numbers.formatDecimal(hotel.pricePerNight, 1, 0)}">123</span>
+                    лв.
+                    <small class="fs-6 text-muted">/ нощувка</small>
+                </h2>
 
                 <hr>
 
-                <!-- ФОРМА ЗА РЕЗЕРВАЦИЯ -->
                 <form th:action="@{/reservations/create}" method="post">
 
-                    <!-- Скрито поле за ID-то на хотела -->
                     <input type="hidden" name="hotelId" th:value="${hotel.id}">
 
                     <div class="mb-3">
@@ -195,12 +181,10 @@
                         <input type="date" name="endDate" class="form-control" required id="endDateInput">
                     </div>
 
-                    <!-- Ако е логнат -> Бутон Резервирай -->
                     <button sec:authorize="isAuthenticated()" type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow">
                         Резервирай <i class="fas fa-check ms-2"></i>
                     </button>
 
-                    <!-- Ако НЕ е логнат -> Линк към вход -->
                     <a sec:authorize="!isAuthenticated()" href="/users/login" class="btn btn-outline-danger w-100">
                         Влезте, за да резервирате
                     </a>
@@ -216,33 +200,26 @@
 
                 <h6 class="text-muted mb-3">Удобства:</h6>
 
-                <!-- Използваме Bootstrap Grid (row и col-6) -->
-                <div class="row g-2 mb-4"> <!-- g-2 прави малко разстояние между елементите -->
+                <div class="row g-2 mb-4">
 
                     <div th:each="extra : ${hotel.amenities}" class="col-6">
                         <div class="d-flex align-items-center" style="font-size: 0.9rem;">
-                            <!-- Иконката -->
                             <i class="fas fa-check-circle text-success me-2 flex-shrink-0"></i>
-                            <!-- Текстът (ако е дълъг, ще се пренесе) -->
                             <span th:text="${extra}">Wi-Fi</span>
                         </div>
                     </div>
 
-                    <!-- Съобщение ако няма екстри -->
                     <div th:if="${hotel.amenities.empty}" class="col-12 text-muted">
                         <i class="fas fa-info-circle"></i> Няма въведени удобства
                     </div>
                 </div>
-        <!-- MODAL ЗА СНИМКИ -->
         <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- modal-lg прави прозореца голям -->
+            <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content bg-transparent border-0">
                     <div class="modal-body text-center position-relative">
 
-                        <!-- Бутон за затваряне -->
                         <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
 
-                        <!-- Тук ще се зарежда голямата снимка -->
                         <img id="modalImage" src="" class="img-fluid rounded shadow-lg" style="max-height: 85vh;">
 
                     </div>
@@ -251,7 +228,6 @@
         </div>
 
         <script>
-            // --- 1. Логика за Датите ---
             document.addEventListener("DOMContentLoaded", function() {
                 const today = new Date().toISOString().split('T')[0];
                 const startInput = document.getElementById("startDateInput");
@@ -260,21 +236,16 @@
                 if(startInput) {
                     startInput.setAttribute('min', today);
 
-                    // Когато промени началната дата, нагласи крайната да е поне следващия ден
                     startInput.addEventListener('change', function() {
                         endInput.setAttribute('min', this.value);
                     });
                 }
             });
 
-            // --- 2. Логика за Снимките (ИЗВЪН IF-а) ---
             function openImageModal(src) {
-                // 1. Намираме елемента на картинката в модала
                 const modalImage = document.getElementById('modalImage');
-                // 2. Слагаме му източника (src) на кликнатата снимка
                 modalImage.src = src;
 
-                // 3. Отваряме модала чрез Bootstrap API
                 const myModal = new bootstrap.Modal(document.getElementById('imageModal'));
                 myModal.show();
             }

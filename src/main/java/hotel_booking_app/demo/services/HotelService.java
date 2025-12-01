@@ -35,8 +35,11 @@ public class HotelService {
 
     public List<Hotel> searchHotels(String location) {
         if (location == null || location.isEmpty()) {
-            return hotelRepository.findAll(); // Ако няма търсене, връща всички
+            return hotelRepository.findAll();
         }
         return hotelRepository.findByLocationContainingIgnoreCase(location);
+    }
+    public void updateHotel(Hotel hotel) {
+        hotelRepository.save(hotel);
     }
 }

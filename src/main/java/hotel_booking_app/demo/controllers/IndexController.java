@@ -21,13 +21,11 @@ public class IndexController {
 
     @GetMapping("/")
     public String home(@RequestParam(value = "location", required = false) String location, Model model) {
-        // Ако потребителят е търсил нещо (location != null), връщаме филтрирани хотели.
-        // Ако не е търсил, връщаме всички (или само топ 3-4 за красота).
 
         List<Hotel> hotels = hotelService.searchHotels(location);
 
         model.addAttribute("hotels", hotels);
-        model.addAttribute("searchLocation", location); // За да запазим какво е писал в полето
+        model.addAttribute("searchLocation", location);
 
         return "home";
     }

@@ -19,27 +19,23 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        // публични URL-та
                         .requestMatchers("/", "/home", "/users/register", "/users/login","/css/**", "/js/**", "/images/**", "/hotels/**").permitAll()
-                        // пример за администратор
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // пример за обикновен потребител (CLIENT)
                         .requestMatchers("/user/**").hasRole("CLIENT")
-                        // всички останали заявки изискват аутентикация
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/users/login")       // Страницата за вход
-                        .loginProcessingUrl("/users/login") // Къде се праща POST заявката (съвпада с th:action във формата)
-                        .defaultSuccessUrl("/", true)    // Къде отиваме при успех
-                        .failureUrl("/users/login?error") // <--- ВАЖНО: При грешка добавя ?error в URL-а
+                        .loginPage("/users/login")
+                        .loginProcessingUrl("/users/login")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/users/login?error")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/users/logout")
                         .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true) // Добра практика: изчиства сесията
-                        .deleteCookies("JSESSIONID") // Добра практика: трие бисквитката
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
 

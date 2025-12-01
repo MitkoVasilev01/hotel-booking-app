@@ -1,5 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<style>
+  .navbar-nav {
+      align-items: center;
+      gap: 15px;
+  }
+
+  .nav-item .nav-link {
+      color: white !important;
+      font-weight: 500;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+  }
+
+  .nav-item .nav-link:hover {
+      background-color: #0d6efd;
+      color: white;
+      transform: translateY(-2px);
+  }
+        button.nav-link {
+            background-color: transparent !important;
+            border: none !important;
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        button.nav-link:hover {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+</style>
 <head>
   <meta charset="UTF-8">
   <title>Моят Профил</title>
@@ -8,7 +41,6 @@
 </head>
 <body class="bg-light">
 
-<!-- НАВИГАЦИЯ (Копирана за удобство) -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
   <div class="container">
     <a class="navbar-brand" href="/"><i class="fas fa-hotel"></i> HotelApp</a>
@@ -27,7 +59,6 @@
 
 <div class="container">
   <div class="row">
-    <!-- ЛЯВА ЧАСТ: Лични данни -->
     <div class="col-md-4 mb-4">
       <div class="card shadow-sm border-0 text-center p-4">
         <div class="mb-3">
@@ -40,17 +71,14 @@
       </div>
     </div>
 
-    <!-- ДЯСНА ЧАСТ: Резервации -->
     <div class="col-md-8">
       <div class="card shadow-sm border-0 p-4">
         <h3 class="mb-4"><i class="fas fa-suitcase-rolling text-primary"></i> Моите Резервации</h3>
 
-        <!-- Ако няма резервации -->
         <div th:if="${user.reservations.empty}" class="alert alert-info">
           Все още нямате направени резервации. <a href="/">Разгледайте хотелите!</a>
         </div>
 
-        <!-- Таблица с резервации -->
         <div th:unless="${user.reservations.empty}" class="table-responsive">
           <table class="table table-hover align-middle">
             <thead class="table-light">
@@ -58,26 +86,30 @@
               <th>Хотел</th>
               <th>Настаняване</th>
               <th>Напускане</th>
-              <th>Статус</th>
+              <th>Резервация</th>
+              <th>Транзакция </th>
+              <th>Цена</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="res : ${user.reservations}">
+
               <td>
                 <strong th:text="${res.hotel.name}">Hotel Name</strong><br>
                 <small class="text-muted" th:text="${res.hotel.location}">Location</small>
               </td>
-              <!-- Форматиране на датите -->
+
               <td th:text="${res.startDate}">2025-11-20</td>
               <td th:text="${res.endDate}">2025-11-25</td>
+
               <td>
-                <!-- Оцветяване според статуса -->
                 <span th:if="${res.status.name() == 'PENDING'}" class="badge bg-warning text-dark">Чакаща</span>
                 <span th:if="${res.status.name() == 'CONFIRMED'}" class="badge bg-success">Потвърдена</span>
                 <span th:if="${res.status.name() == 'CANCELLED'}" class="badge bg-danger">Отменена</span>
               </td>
+
               <td>
-                <!-- Ако е PENDING -> Показваме бутон ПЛАТИ -->
+
                 <div th:if="${res.status.name() == 'PENDING'}">
                   <span class="badge bg-warning text-dark mb-2">Чака плащане</span>
 
@@ -88,13 +120,20 @@
                   </form>
                 </div>
 
-                <!-- Ако е CONFIRMED -> Само етикет -->
                 <span th:if="${res.status.name() == 'CONFIRMED'}" class="badge bg-success">
                                         <i class="fas fa-check"></i> Потвърдена
                                     </span>
 
-                <!-- Ако е CANCELLED -->
                 <span th:if="${res.status.name() == 'CANCELLED'}" class="badge bg-danger">Отменена</span>
+              <td>
+                <div class="fw-bold text-dark">
+                  <span th:text="${#numbers.formatDecimal(res.getTotalPrice(), 1, 0)}">240</span> лв.
+                </div>
+                <small class="text-muted">
+                  за <span th:text="${res.getDays()}">2</span> нощувки
+                </small>
+              </td>
+
               </td>
             </tr>
             </tbody>

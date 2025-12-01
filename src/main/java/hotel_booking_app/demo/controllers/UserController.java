@@ -45,7 +45,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/profile") // Заедно с класа става "/users/profile"
+    @GetMapping("/profile")
     public String myProfile(Principal principal, Model model) {
         String username = principal.getName();
 
@@ -54,7 +54,7 @@ public class UserController {
 
         model.addAttribute("user", user);
 
-        return "profile"; // Търси profile.html
+        return "profile";
     }
 }
 

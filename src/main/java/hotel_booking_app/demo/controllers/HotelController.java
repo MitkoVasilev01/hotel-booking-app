@@ -34,7 +34,7 @@ public class HotelController {
     public String getAllHotels(Model model) {
         List<Hotel> hotels = hotelService.getAllHotels();
         model.addAttribute("hotels", hotels);
-        return "hotels-list"; // Това трябва да е файл: src/main/resources/templates/hotels-list.html
+        return "hotels-list";
     }
 
     @GetMapping("/details/{id}")
@@ -49,28 +49,23 @@ public class HotelController {
     public String addReview(@PathVariable UUID hotelId,
                             @RequestParam("rating") int rating,
                             @RequestParam("comment") String comment,
-                            Principal principal) { // Principal ни дава текущо логнатия user
+                            Principal principal) {
 
-        // 1. Намираме хотела
         Hotel hotel = hotelService.getHotelById(hotelId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid hotel Id"));
 
-        // 2. Намираме потребителя по username (от сесията)
         String username = principal.getName();
         User user = userService.findByName(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // 3. Създаваме ревюто
         Review review = new Review();
         review.setHotel(hotel);
         review.setUser(user);
         review.setRating(rating);
         review.setComment(comment);
 
-        // 4. Записваме го
         reviewRepository.save(review);
 
-        // 5. Презареждаме страницата
         return "redirect:/hotels/details/" + hotelId;
     }
 }

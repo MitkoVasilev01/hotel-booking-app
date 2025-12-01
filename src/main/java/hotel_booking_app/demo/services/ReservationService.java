@@ -41,15 +41,10 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
-        // Б) Извикваме другия сървис (Payment Service)
-        // Засега пращаме твърда сума (напр. 100.0), по-късно може да я смятаме
         paymentClient.processPayment(reservation.getId(), 200.00);
 
-        // В) Ако горният ред не гръмне, значи плащането е успешно
-        // Променяме статуса на CONFIRMED
         reservation.setStatus(hotel_booking_app.demo.enums.BookingStatus.CONFIRMED);
 
-        // Г) Записваме промяната в нашата база
         reservationRepository.save(reservation);
     }
 }
