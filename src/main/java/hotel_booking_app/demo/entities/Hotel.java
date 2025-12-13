@@ -5,9 +5,6 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.util.*;
 
 @Entity
@@ -35,7 +32,7 @@ public class Hotel {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "hotel_amenities", joinColumns = @JoinColumn(name = "hotel_id"))
     @Column(name = "amenity")
-    private Set<String> amenities = new HashSet<>(); // Беше List, става Set
+    private Set<String> amenities = new HashSet<>();
 
     private String address;
 

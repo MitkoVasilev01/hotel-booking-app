@@ -15,7 +15,7 @@
                     <h4 class="mb-0">Добавяне на нов хотел</h4>
                 </div>
                 <div class="card-body">
-                    <form th:action="@{/admin/hotels/add}" th:object="${hotel}" method="post">
+                    <form th:action="@{/admin/hotels/add}" th:object="${hotel}" method="post" enctype="multipart/form-data">
                         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
                         <div class="row">
                             <div class="col-md-8 mb-3">
@@ -32,7 +32,7 @@
                         <div class="mb-3">
                             <label class="form-label">Цена на нощувка (в лева)</label>
                             <div class="input-group">
-                                <input type="number" step="0.01" th:field="*{pricePerNight}" class="form-control" placeholder="100.00" required>
+                                <input type="number" step="1" th:field="*{pricePerNight}" class="form-control" placeholder="100" required>
                                 <span class="input-group-text">лв.</span>
                             </div>
                         </div>
@@ -54,13 +54,13 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">URL на Главна снимка (Thumbnail)</label>
-                            <input type="text" th:field="*{imageUrl}" class="form-control" required>
+                            <label class="form-label">Главна снимка (Качете файл)</label>
+                            <input type="file" name="mainImageFile" class="form-control" accept="image/*" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Галерия (Линкове, разделени със запетая)</label>
-                            <textarea name="galleryText" class="form-control" rows="2" placeholder="https://snimka1.jpg, https://snimka2.jpg"></textarea>
+                            <label class="form-label">Галерия (Изберете поне 4 снимки)</label>
+                            <input type="file" name="galleryFiles" class="form-control" accept="image/*" multiple required>
                         </div>
 
                         <div class="mb-3">

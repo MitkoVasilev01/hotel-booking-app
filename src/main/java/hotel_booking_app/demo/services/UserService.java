@@ -1,8 +1,6 @@
 package hotel_booking_app.demo.services;
 
-import hotel_booking_app.demo.entities.Hotel;
 import hotel_booking_app.demo.entities.User;
-import hotel_booking_app.demo.repositories.HotelRepository;
 import hotel_booking_app.demo.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

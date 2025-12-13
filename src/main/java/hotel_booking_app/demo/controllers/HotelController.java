@@ -3,11 +3,9 @@ package hotel_booking_app.demo.controllers;
 import hotel_booking_app.demo.entities.Hotel;
 import hotel_booking_app.demo.entities.Review;
 import hotel_booking_app.demo.entities.User;
-import hotel_booking_app.demo.repositories.HotelRepository;
 import hotel_booking_app.demo.repositories.ReviewRepository;
 import hotel_booking_app.demo.services.HotelService;
 import hotel_booking_app.demo.services.UserService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +19,7 @@ import java.util.UUID;
 public class HotelController {
 
     private final HotelService hotelService;
-    private final UserService userService;         // <--- Ново
+    private final UserService userService;
     private final ReviewRepository reviewRepository;
 
     public HotelController(HotelService hotelService, UserService userService, ReviewRepository reviewRepository) {

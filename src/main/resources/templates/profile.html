@@ -1,43 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<style>
-  .navbar-nav {
-      align-items: center;
-      gap: 15px;
-  }
-
-  .nav-item .nav-link {
-      color: white !important;
-      font-weight: 500;
-      padding: 8px 15px;
-      border-radius: 5px;
-      transition: all 0.3s ease;
-  }
-
-  .nav-item .nav-link:hover {
-      background-color: #0d6efd;
-      color: white;
-      transform: translateY(-2px);
-  }
-        button.nav-link {
-            background-color: transparent !important;
-            border: none !important;
-            color: white !important;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        button.nav-link:hover {
-            background-color: #dc3545 !important;
-            color: white !important;
-        }
-</style>
 <head>
   <meta charset="UTF-8">
   <title>Моят Профил</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Стилове за навигацията */
+    .navbar-nav { align-items: center; gap: 15px; }
+    .nav-item .nav-link {
+        color: white !important;
+        font-weight: 500;
+        padding: 8px 15px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    .nav-item .nav-link:hover {
+        background-color: #0d6efd;
+        color: white;
+        transform: translateY(-2px);
+    }
+    /* Стил за бутона Изход */
+    button.nav-link {
+        background-color: transparent !important;
+        border: none !important;
+        color: white !important;
+        padding: 8px 15px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    button.nav-link:hover {
+        background-color: #dc3545 !important;
+        color: white !important;
+    }
+  </style>
 </head>
 <body class="bg-light">
 
@@ -49,7 +46,7 @@
         <li class="nav-item"><a class="nav-link" href="/">Начало</a></li>
         <li class="nav-item">
           <form th:action="@{/users/logout}" method="post" class="d-inline">
-            <button type="submit" class="nav-link bg-transparent border-0">Изход</button>
+            <button type="submit" class="nav-link">Изход</button>
           </form>
         </li>
       </ul>
@@ -59,15 +56,74 @@
 
 <div class="container">
   <div class="row">
+
+
     <div class="col-md-4 mb-4">
-      <div class="card shadow-sm border-0 text-center p-4">
-        <div class="mb-3">
+
+
+      <div class="card shadow-sm border-0 text-center p-4 mb-3">
+        <div class="mb-3 position-relative d-inline-block">
           <i class="fas fa-user-circle fa-5x text-secondary"></i>
+          <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-light rounded-circle"></span>
         </div>
-        <h4 th:text="${user.name}">User Name</h4>
-        <p class="text-muted" th:text="${user.email}">user@example.com</p>
-        <hr>
-        <p class="text-start"><i class="fas fa-shield-alt text-primary"></i> Роля: <strong th:text="${user.role}">CLIENT</strong></p>
+
+        <h4 th:text="${user.name}" class="mb-1">User Name</h4>
+        <p class="text-muted mb-3" th:text="${user.email}">user@example.com</p>
+
+
+        <div class="text-start mb-4 px-3 border-top pt-3">
+          <p class="mb-2" th:if="${user.phoneNumber != null && !user.phoneNumber.isEmpty()}">
+            <i class="fas fa-phone text-success me-2"></i>
+            <span th:text="${user.phoneNumber}">+359...</span>
+          </p>
+          <p class="mb-0" th:if="${user.city != null && !user.city.isEmpty()}">
+            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+            <span th:text="${user.city}">Sofia</span>
+          </p>
+
+          <p class="mb-0 text-muted small text-center" th:if="${user.city == null && user.phoneNumber == null}">
+            <em>Няма въведени телефон и град.</em>
+          </p>
+        </div>
+
+        <div class="d-grid gap-2">
+
+          <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <i class="fas fa-user-edit"></i> Редактирай данни
+          </button>
+
+
+          <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+            <i class="fas fa-key"></i> Смени парола
+          </button>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 p-3">
+        <h6 class="text-muted border-bottom pb-2 mb-3">Моята Статистика</h6>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span><i class="fas fa-bookmark text-warning me-2"></i> Резервации:</span>
+          <strong th:text="${user.reservations.size()}">0</strong>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <span><i class="fas fa-wallet text-success me-2"></i> Общо похарчени:</span>
+          <strong class="text-success">
+            <span th:text="${#numbers.formatDecimal(user.getTotalSpent(), 1, 0)}">0</span> лв.
+          </strong>
+        </div>
+      </div>
+
+      <div th:if="${param.error != null and param.error[0] == 'oldpass'}" class="alert alert-danger mt-3">
+        Грешна стара парола!
+      </div>
+      <div th:if="${param.error != null and param.error[0] == 'match'}" class="alert alert-danger mt-3">
+        Новите пароли не съвпадат!
+      </div>
+      <div th:if="${param.error != null and param.error[0] == 'weakpass'}" class="alert alert-danger mt-3">
+        <small>Паролата трябва да има поне 8 символа, главна буква, цифра и символ!</small>
+      </div>
+      <div th:if="${param.success}" class="alert alert-success mt-3">
+        Паролата е сменена успешно!
       </div>
     </div>
 
@@ -86,54 +142,48 @@
               <th>Хотел</th>
               <th>Настаняване</th>
               <th>Напускане</th>
-              <th>Резервация</th>
-              <th>Транзакция </th>
               <th>Цена</th>
+              <th>Статус</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="res : ${user.reservations}">
-
               <td>
-                <strong th:text="${res.hotel.name}">Hotel Name</strong><br>
-                <small class="text-muted" th:text="${res.hotel.location}">Location</small>
+                <div th:if="${res.hotel != null}">
+                  <strong th:text="${res.hotel.name}">Hotel Name</strong><br>
+                  <small class="text-muted" th:text="${res.hotel.location}">Location</small>
+                </div>
+                <div th:if="${res.hotel == null}" class="text-danger">Невалиден хотел</div>
               </td>
 
               <td th:text="${res.startDate}">2025-11-20</td>
               <td th:text="${res.endDate}">2025-11-25</td>
 
               <td>
-                <span th:if="${res.status.name() == 'PENDING'}" class="badge bg-warning text-dark">Чакаща</span>
-                <span th:if="${res.status.name() == 'CONFIRMED'}" class="badge bg-success">Потвърдена</span>
-                <span th:if="${res.status.name() == 'CANCELLED'}" class="badge bg-danger">Отменена</span>
+                <div class="fw-bold text-dark">
+                  <span th:text="${#numbers.formatDecimal(res.getTotalPrice(), 1, 0)}">240</span> лв.
+                </div>
+                <small class="text-muted">
+                  за <span th:text="${res.getDays()}">2</span>
+                  <span th:text="${res.getDays() == 1} ? 'нощувка' : 'нощувки'">нощувки</span>
+                </small>
               </td>
 
               <td>
-
                 <div th:if="${res.status.name() == 'PENDING'}">
                   <span class="badge bg-warning text-dark mb-2">Чака плащане</span>
-
                   <form th:action="@{/reservations/pay/{id}(id=${res.id})}" method="post">
                     <button type="submit" class="btn btn-sm btn-success">
-                      <i class="fas fa-credit-card"></i> Плати сега
+                      <i class="fas fa-credit-card"></i> Плати
                     </button>
                   </form>
                 </div>
 
                 <span th:if="${res.status.name() == 'CONFIRMED'}" class="badge bg-success">
-                                        <i class="fas fa-check"></i> Потвърдена
-                                    </span>
+                                    <i class="fas fa-check"></i> Потвърдена
+                                </span>
 
                 <span th:if="${res.status.name() == 'CANCELLED'}" class="badge bg-danger">Отменена</span>
-              <td>
-                <div class="fw-bold text-dark">
-                  <span th:text="${#numbers.formatDecimal(res.getTotalPrice(), 1, 0)}">240</span> лв.
-                </div>
-                <small class="text-muted">
-                  за <span th:text="${res.getDays()}">2</span> нощувки
-                </small>
-              </td>
-
               </td>
             </tr>
             </tbody>
@@ -143,6 +193,81 @@
     </div>
   </div>
 </div>
+
+
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Редактиране на данни</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form th:action="@{/users/profile/update}" method="post">
+        <div class="modal-body">
+          <p class="text-muted small mb-3">Въведете допълнителни данни за контакт.</p>
+
+          <div class="mb-3">
+            <label class="form-label">Телефонен номер</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-phone"></i></span>
+              <input type="text" name="phoneNumber" class="form-control"
+                     th:value="${user.phoneNumber}" placeholder="+359...">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Град / Населено място</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+              <input type="text" name="city" class="form-control"
+                     th:value="${user.city}" placeholder="напр. София">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+          <button type="submit" class="btn btn-primary">Запази промените</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Смяна на парола</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form th:action="@{/users/profile/change-password}" method="post">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Стара парола</label>
+            <input type="password" name="oldPassword" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Нова парола</label>
+            <input type="password" name="newPassword" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Потвърди нова парола</label>
+            <input type="password" name="confirmPassword" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+          <button type="submit" class="btn btn-danger">Смени паролата</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

@@ -21,7 +21,12 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
     @GetMapping("/login")
-    public String login() {
+    public String login(@RequestParam(value = "redirect", required = false) String redirect,
+                        jakarta.servlet.http.HttpSession session) {
+        if (redirect != null && !redirect.isEmpty()) {
+            session.setAttribute("redirectAfterLogin", redirect);
+        }
+
         return "login";
     }
 
@@ -38,7 +43,7 @@ public class AuthController {
                                   BindingResult bindingResult,
                                   Model model) {
 
-        System.out.println("Проверка на регистрацията...");
+
 
         if (!userRegisterBindingModel.getPassword().equals(userRegisterBindingModel.getConfirmPassword())) {
             System.out.println("Грешка: Паролите не съвпадат");

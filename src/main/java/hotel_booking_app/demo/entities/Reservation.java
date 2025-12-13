@@ -97,7 +97,7 @@ public class Reservation {
     public double getTotalPrice() {
         if (hotel == null) return 0.0;
         long days = getDays();
-        if (days < 1) days = 1; // Поне 1 нощувка
+        if (days < 1) days = 1;
         return days * hotel.getPricePerNight();
     }
 }

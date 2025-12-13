@@ -1,8 +1,6 @@
 package hotel_booking_app.demo.services;
 
-import hotel_booking_app.demo.entities.Hotel;
 import hotel_booking_app.demo.entities.Review;
-import hotel_booking_app.demo.repositories.HotelRepository;
 import hotel_booking_app.demo.repositories.ReviewRepository;
 import org.springframework.stereotype.Service;
 

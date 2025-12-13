@@ -8,7 +8,7 @@ import hotel_booking_app.demo.models.binding.ReservationBindingModel;
 import hotel_booking_app.demo.services.HotelService;
 import hotel_booking_app.demo.services.ReservationService;
 import hotel_booking_app.demo.services.UserService;
-import org.springframework.stereotype.Controller; // <--- ВАЖЕН ИМПОРТ
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,7 +49,7 @@ public class ReservationController {
         reservation.setStatus(BookingStatus.PENDING);
 
         long days = java.time.temporal.ChronoUnit.DAYS.between(model.getStartDate(), model.getEndDate());
-        if (days < 1) days = 1; // Защита
+        if (days < 1) days = 1;
 
         double total = days * hotel.getPricePerNight();
 

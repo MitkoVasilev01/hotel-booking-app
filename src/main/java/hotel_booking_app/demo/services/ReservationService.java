@@ -1,7 +1,6 @@
 package hotel_booking_app.demo.services;
 
 import hotel_booking_app.demo.clients.PaymentClient;
-import hotel_booking_app.demo.entities.Hotel;
 import hotel_booking_app.demo.entities.Reservation;
 import hotel_booking_app.demo.repositories.ReservationRepository;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,7 @@ public class ReservationService {
     }
 
     public void payForReservation(UUID reservationId) {
-        // А) Намираме резервацията
+
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
