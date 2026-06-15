@@ -1,11 +1,8 @@
 package hotel_booking_app.demo.controllers;
 
 import hotel_booking_app.demo.entities.Hotel;
-import hotel_booking_app.demo.entities.Review;
-import hotel_booking_app.demo.entities.User;
-import hotel_booking_app.demo.repositories.ReviewRepository;
 import hotel_booking_app.demo.services.HotelService;
-import hotel_booking_app.demo.services.UserService;
+import hotel_booking_app.demo.services.ReviewService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,20 +16,18 @@ import java.util.UUID;
 public class HotelController {
 
     private final HotelService hotelService;
-    private final UserService userService;
-    private final ReviewRepository reviewRepository;
+    private final ReviewService reviewService;
 
-    public HotelController(HotelService hotelService, UserService userService, ReviewRepository reviewRepository) {
+    public HotelController(HotelService hotelService, ReviewService reviewService) {
         this.hotelService = hotelService;
-        this.userService = userService;
-        this.reviewRepository = reviewRepository;
+        this.reviewService = reviewService;
     }
 
     @GetMapping("/all")
     public String getAllHotels(Model model) {
         List<Hotel> hotels = hotelService.getAllHotels();
         model.addAttribute("hotels", hotels);
-        return "hotels-list";
+        return "home";
     }
 
     @GetMapping("/details/{id}")
@@ -49,20 +44,7 @@ public class HotelController {
                             @RequestParam("comment") String comment,
                             Principal principal) {
 
-        Hotel hotel = hotelService.getHotelById(hotelId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid hotel Id"));
-
-        String username = principal.getName();
-        User user = userService.findByName(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        Review review = new Review();
-        review.setHotel(hotel);
-        review.setUser(user);
-        review.setRating(rating);
-        review.setComment(comment);
-
-        reviewRepository.save(review);
+        reviewService.createReview(hotelId, principal.getName(), rating, comment);
 
         return "redirect:/hotels/details/" + hotelId;
     }

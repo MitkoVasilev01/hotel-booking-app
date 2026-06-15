@@ -70,12 +70,12 @@
 <div class="register-container">
   <h2>Регистрация</h2>
 
-  <form th:action="@{/users/register}" th:object="${userRegisterBindingModel}" method="post">
+  <form th:action="@{/users/register}" th:object="${userRegisterDto}" method="post">
 
     <div class="form-group">
       <label for="username">Потребителско име:</label>
-      <input th:field="*{username}" id="username" type="text" placeholder="Въведете име"/>
-      <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-msg">Username Error</div>
+      <input th:field="*{name}" id="username" type="text" placeholder="Въведете име"/>
+      <div th:if="${#fields.hasErrors('name')}" th:text="${#fields.errors('name')[0]}" class="error-msg">Грешка потребителско име</div>
     </div>
 
     <div class="form-group">
@@ -87,13 +87,13 @@
     <div class="form-group">
       <label for="password">Парола:</label>
       <input th:field="*{password}" id="password" type="password" placeholder="Въведете парола"/>
-      <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-msg">Password Error</div>
+      <div th:if="${#fields.hasErrors('password')}" th:text="${#fields.errors('password')[0]}" class="error-msg">Грешка парола</div>
     </div>
 
     <div class="form-group">
       <label for="confirmPassword">Потвърди парола:</label>
       <input th:field="*{confirmPassword}" id="confirmPassword" type="password" placeholder="Повторете паролата"/>
-      <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="error-msg">Confirm Password Error</div>
+      <div th:if="${#fields.hasErrors('confirmPassword')}" th:text="${#fields.errors('confirmPassword')[0]}" class="error-msg">Грешка потвърждение</div>
     </div>
 
     <div>

@@ -1,9 +1,9 @@
 package hotel_booking_app.demo.controllers;
 
+import hotel_booking_app.demo.dtos.UserRegisterDto;
 import hotel_booking_app.demo.entities.User;
 import hotel_booking_app.demo.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +17,9 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
@@ -37,8 +35,8 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public User createUser(@jakarta.validation.Valid @RequestBody UserRegisterDto userRegisterDto) {
+        return userService.registerUser(userRegisterDto);
     }
 
     @DeleteMapping("/{id}")
@@ -64,13 +62,8 @@ public class UserController {
                                 @RequestParam("city") String city,
                                 Principal principal) {
 
-        User user = userService.findByName(principal.getName())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        user.setPhoneNumber(phoneNumber);
-        user.setCity(city);
-
-        userService.createUser(user);
+        userService.updateUser(principal.getName(), phoneNumber, city);
 
         return "redirect:/users/profile";
     }
@@ -79,29 +72,14 @@ public class UserController {
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmPassword") String confirmPassword,
-                                 Principal principal,
-                                 Model model) {
+                                 Principal principal) {
 
-        User user = userService.findByName(principal.getName()).orElseThrow();
+        try {
+            userService.changePassword(principal.getName(), oldPassword, newPassword, confirmPassword);
 
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-
-            return "redirect:/users/profile?error=oldpass";
+        } catch (IllegalArgumentException e) {
+            return "redirect:/users/profile?error=" + e.getMessage();
         }
-
-        if (!newPassword.equals(confirmPassword)) {
-
-            return "redirect:/users/profile?error=match";
-        }
-        String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{8,}$";
-
-        if (!newPassword.matches(passwordRegex)) {
-            return "redirect:/users/profile?error=weakpass";
-        }
-
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userService.createUser(user);
-
         return "redirect:/users/profile?success=pass";
     }
 }

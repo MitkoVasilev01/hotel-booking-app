@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
-@FeignClient(name = "payment-service", url = "http://localhost:8081/api/payments")
+@FeignClient(name = "payment-service", url = "${PAYMENT_SERVICE_URL:http://localhost:8081}")
 public interface PaymentClient {
 
-    @PostMapping
+    @PostMapping("/api/payments")
     Object processPayment(@RequestParam("reservationId") UUID reservationId,
                           @RequestParam("amount") Double amount);
 }

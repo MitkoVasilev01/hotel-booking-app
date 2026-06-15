@@ -6,33 +6,31 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    /* Стилове за навигацията */
     .navbar-nav { align-items: center; gap: 15px; }
     .nav-item .nav-link {
-        color: white !important;
-        font-weight: 500;
-        padding: 8px 15px;
-        border-radius: 5px;
-        transition: all 0.3s ease;
+      color: white !important;
+      font-weight: 500;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
     }
     .nav-item .nav-link:hover {
-        background-color: #0d6efd;
-        color: white;
-        transform: translateY(-2px);
+      background-color: #0d6efd;
+      color: white;
+      transform: translateY(-2px);
     }
-    /* Стил за бутона Изход */
     button.nav-link {
-        background-color: transparent !important;
-        border: none !important;
-        color: white !important;
-        padding: 8px 15px;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-        cursor: pointer;
+      background-color: transparent !important;
+      border: none !important;
+      color: white !important;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      cursor: pointer;
     }
     button.nav-link:hover {
-        background-color: #dc3545 !important;
-        color: white !important;
+      background-color: #dc3545 !important;
+      color: white !important;
     }
   </style>
 </head>
@@ -55,12 +53,42 @@
 </nav>
 
 <div class="container">
+
+  <!-- Блок за съобщения (Горен ред) -->
+  <div th:if="${param.success != null or param.error != null}" class="row mb-4">
+    <div class="col-12">
+      <!-- 1. УСПЕХ -->
+      <div th:if="${param.success != null}"
+           class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <strong>Успех!</strong>
+        <span th:if="${param.success[0] == 'pass'}">Паролата Ви беше променена успешно.</span>
+        <!-- ДОБАВЕНО ЗА УСПЕШНО ПЛАЩАНЕ -->
+        <span th:if="${param.success[0] == 'pay'}">Плащането на резервацията беше извършено успешно!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+      <!-- 2. ГРЕШКИ -->
+      <div th:if="${param.error != null}"
+           class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>Грешка:</strong>
+        <span th:if="${param.error[0] == 'oldpass'}">Въведената стара парола е грешна!</span>
+        <span th:if="${param.error[0] == 'match'}">Новата парола и потвърждението не съвпадат!</span>
+        <span th:if="${param.error[0] == 'weakpass'}">Новата парола е прекалено слаба!</span>
+        <span th:if="${param.error[0] == 'User not found'}">Потребителят не е намерен!</span>
+
+        <!-- НОВОТО СЪОБЩЕНИЕ ЗА ОФЛАЙН МИКРОСЪРВИС -->
+        <span th:if="${param.error[0] == 'payment_offline'}">Системата ни за разплащания в момента е офлайн. Моля, опитайте отново след няколко минути или се свържете с поддръжката ни.</span>
+
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
 
-
     <div class="col-md-4 mb-4">
-
-
       <div class="card shadow-sm border-0 text-center p-4 mb-3">
         <div class="mb-3 position-relative d-inline-block">
           <i class="fas fa-user-circle fa-5x text-secondary"></i>
@@ -69,7 +97,6 @@
 
         <h4 th:text="${user.name}" class="mb-1">User Name</h4>
         <p class="text-muted mb-3" th:text="${user.email}">user@example.com</p>
-
 
         <div class="text-start mb-4 px-3 border-top pt-3">
           <p class="mb-2" th:if="${user.phoneNumber != null && !user.phoneNumber.isEmpty()}">
@@ -80,19 +107,15 @@
             <i class="fas fa-map-marker-alt text-danger me-2"></i>
             <span th:text="${user.city}">Sofia</span>
           </p>
-
           <p class="mb-0 text-muted small text-center" th:if="${user.city == null && user.phoneNumber == null}">
             <em>Няма въведени телефон и град.</em>
           </p>
         </div>
 
         <div class="d-grid gap-2">
-
           <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
             <i class="fas fa-user-edit"></i> Редактирай данни
           </button>
-
-
           <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
             <i class="fas fa-key"></i> Смени парола
           </button>
@@ -108,22 +131,9 @@
         <div class="d-flex justify-content-between align-items-center">
           <span><i class="fas fa-wallet text-success me-2"></i> Общо похарчени:</span>
           <strong class="text-success">
-            <span th:text="${#numbers.formatDecimal(user.getTotalSpent(), 1, 0)}">0</span> лв.
+            <span th:text="${#numbers.formatDecimal(user.getTotalSpent(), 1, 0)}">0</span> EUR.
           </strong>
         </div>
-      </div>
-
-      <div th:if="${param.error != null and param.error[0] == 'oldpass'}" class="alert alert-danger mt-3">
-        Грешна стара парола!
-      </div>
-      <div th:if="${param.error != null and param.error[0] == 'match'}" class="alert alert-danger mt-3">
-        Новите пароли не съвпадат!
-      </div>
-      <div th:if="${param.error != null and param.error[0] == 'weakpass'}" class="alert alert-danger mt-3">
-        <small>Паролата трябва да има поне 8 символа, главна буква, цифра и символ!</small>
-      </div>
-      <div th:if="${param.success}" class="alert alert-success mt-3">
-        Паролата е сменена успешно!
       </div>
     </div>
 
@@ -131,11 +141,11 @@
       <div class="card shadow-sm border-0 p-4">
         <h3 class="mb-4"><i class="fas fa-suitcase-rolling text-primary"></i> Моите Резервации</h3>
 
-        <div th:if="${user.reservations.empty}" class="alert alert-info">
+        <div th:if="${user.reservations.isEmpty()}" class="alert alert-info">
           Все още нямате направени резервации. <a href="/">Разгледайте хотелите!</a>
         </div>
 
-        <div th:unless="${user.reservations.empty}" class="table-responsive">
+        <div th:unless="${user.reservations.isEmpty()}" class="table-responsive">
           <table class="table table-hover align-middle">
             <thead class="table-light">
             <tr>
@@ -161,11 +171,11 @@
 
               <td>
                 <div class="fw-bold text-dark">
-                  <span th:text="${#numbers.formatDecimal(res.getTotalPrice(), 1, 0)}">240</span> лв.
+                  <span th:text="${#numbers.formatDecimal(res.getTotalPrice(), 1, 0)}">240</span> EUR.
                 </div>
                 <small class="text-muted">
-                  за <span th:text="${res.getDays()}">2</span>
-                  <span th:text="${res.getDays() == 1} ? 'нощувка' : 'нощувки'">нощувки</span>
+                  за <span th:text="${res.days}">2</span>
+                  <span th:text="${res.days == 1} ? 'нощувка' : 'нощувки'">нощувки</span>
                 </small>
               </td>
 
@@ -180,8 +190,8 @@
                 </div>
 
                 <span th:if="${res.status.name() == 'CONFIRMED'}" class="badge bg-success">
-                                    <i class="fas fa-check"></i> Потвърдена
-                                </span>
+                  <i class="fas fa-check"></i> Потвърдена
+                </span>
 
                 <span th:if="${res.status.name() == 'CANCELLED'}" class="badge bg-danger">Отменена</span>
               </td>
@@ -193,8 +203,6 @@
     </div>
   </div>
 </div>
-
-
 
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

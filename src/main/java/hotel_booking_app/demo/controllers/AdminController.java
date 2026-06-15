@@ -1,22 +1,19 @@
 package hotel_booking_app.demo.controllers;
 
-import hotel_booking_app.demo.entities.Hotel;
+import hotel_booking_app.demo.dtos.HotelFormDto;
 import hotel_booking_app.demo.enums.HotelCategory;
 import hotel_booking_app.demo.services.HotelService;
+import hotel_booking_app.demo.util.FileUploadUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.util.StringUtils;
-import hotel_booking_app.demo.util.FileUploadUtil;
 import java.io.IOException;
 import java.util.UUID;
 
-import java.util.*;
-
-
 @Controller
 @RequestMapping("/admin")
+@Slf4j
 public class AdminController {
 
     private final HotelService hotelService;
@@ -25,113 +22,65 @@ public class AdminController {
         this.hotelService = hotelService;
     }
 
+
+
     @GetMapping("/hotels/add")
     public String addHotelForm(Model model) {
-        model.addAttribute("hotel", new Hotel());
+        model.addAttribute("hotelDto", new HotelFormDto());
         model.addAttribute("categories", HotelCategory.values());
         return "admin/add-hotel";
     }
 
     @PostMapping("/hotels/add")
-    public String addHotel(Hotel hotel,
-                           @RequestParam("amenitiesText") String amenitiesText,
-                           @RequestParam("mainImageFile") MultipartFile mainImageFile,
-                           @RequestParam("galleryFiles") MultipartFile[] galleryFiles,
-                           Model model) throws IOException {
+    public String addHotel(@ModelAttribute("hotelDto") HotelFormDto hotelDto, Model model) {
 
-
-        if (!mainImageFile.isEmpty()) {
-
-            String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(mainImageFile.getOriginalFilename());
-
-
-            String uploadDir = "hotel-photos";
-            FileUploadUtil.saveFile(uploadDir, fileName, mainImageFile);
-
-
-            hotel.setImageUrl("/photos/" + fileName);
-        }
-
-
-        Set<String> galleryLinks = new HashSet<>();
-
-        for (MultipartFile file : galleryFiles) {
-            if (!file.isEmpty()) {
-                String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-                String uploadDir = "hotel-photos";
-
-                FileUploadUtil.saveFile(uploadDir, fileName, file);
-
-                galleryLinks.add("/photos/" + fileName);
-            }
-        }
-
-        if (galleryLinks.size() < 4) {
+        if (hotelDto.getGalleryFiles() == null || FileUploadUtil.getActiveFilesCount(hotelDto.getGalleryFiles()) < 4) {
             model.addAttribute("errorMessage", "Трябва да качите поне 4 снимки в галерията!");
-            model.addAttribute("hotel", hotel);
             model.addAttribute("categories", HotelCategory.values());
             return "admin/add-hotel";
         }
 
-        hotel.setGalleryImages(galleryLinks);
-
-
-        if (!amenitiesText.isEmpty()) {
-            String[] splitAmenities = amenitiesText.split(",");
-            for (String item : splitAmenities) {
-                if (!item.trim().isEmpty()) hotel.getAmenities().add(item.trim());
-            }
+        try {
+            hotelService.addHotel(hotelDto);
+        } catch (IOException e) {
+            model.addAttribute("errorMessage", "Грешка при записването на снимките!");
+            model.addAttribute("categories", HotelCategory.values());
+            return "admin/add-hotel";
         }
-
-        hotelService.createHotel(hotel);
 
         return "redirect:/";
     }
+
     @GetMapping("/hotels/edit/{id}")
     public String editHotelForm(@PathVariable UUID id, Model model) {
-        Hotel hotel = hotelService.getHotelById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid hotel Id:" + id));
+        HotelFormDto hotelDto = hotelService.getHotelFormDtoById(id);
 
-        model.addAttribute("hotel", hotel);
+        model.addAttribute("hotelDto", hotelDto);
         model.addAttribute("categories", HotelCategory.values());
-
-        String amenitiesString = String.join(", ", hotel.getAmenities());
-        String galleryString = String.join(", ", hotel.getGalleryImages());
-
-        model.addAttribute("amenitiesText", amenitiesString);
-        model.addAttribute("galleryText", galleryString);
-
         return "admin/edit-hotel";
     }
 
     @PostMapping("/hotels/edit/{id}")
-    public String editHotel(@PathVariable UUID id,
-                            Hotel hotel,
-                            @RequestParam("amenitiesText") String amenitiesText,
-                            @RequestParam("galleryText") String galleryText) {
-
-        hotel.setId(id);
-
-        Set<String> cleanGalleryLinks = new HashSet<>();
-        if (!galleryText.isEmpty()) {
-            String[] splitImages = galleryText.split(",");
-            for (String img : splitImages) {
-                if (!img.trim().isEmpty()) cleanGalleryLinks.add(img.trim());
-            }
+    public String editHotel(@PathVariable UUID id, @ModelAttribute("hotelDto") HotelFormDto hotelDto, Model model) {
+        try {
+            hotelService.updateHotel(id, hotelDto);
+        } catch (Exception e) {
+            log.error("Грешка при редактиране на хотел с ID: {}", id, e);
+            model.addAttribute("errorMessage", "Възникна грешка при редактирането на хотела!");
+            model.addAttribute("categories", HotelCategory.values());
+            return "admin/edit-hotel";
         }
-        hotel.setGalleryImages(cleanGalleryLinks);
-
-        Set<String> cleanAmenities = new HashSet<>();
-        if (!amenitiesText.isEmpty()) {
-            String[] splitAmenities = amenitiesText.split(",");
-            for (String item : splitAmenities) {
-                if (!item.trim().isEmpty()) cleanAmenities.add(item.trim());
-            }
-        }
-        hotel.setAmenities(cleanAmenities);
-
-        hotelService.updateHotel(hotel);
-
         return "redirect:/hotels/details/" + id;
     }
+
+    @PostMapping("/hotels/delete/{id}")
+    public String deleteHotel(@PathVariable UUID id) {
+        hotelService.deleteHotel(id);
+        return "redirect:/hotels/all";
+    }
+
+
+
+
+
 }

@@ -25,5 +25,12 @@ public class FileUploadUtil {
             throw new IOException("Could not save image file: " + fileName, ioe);
         }
     }
+    public static int getActiveFilesCount(org.springframework.web.multipart.MultipartFile[] files) {
+        int count = 0;
+        for (var file : files) {
+            if (!file.isEmpty()) count++;
+        }
+        return count;
+    }
 }
 

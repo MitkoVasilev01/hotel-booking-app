@@ -3,14 +3,13 @@ package hotel_booking_app.demo.controllers;
 import hotel_booking_app.demo.entities.Review;
 import hotel_booking_app.demo.services.ReviewService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequestMapping("/api/reviews")
 public class ReviewController {
 
