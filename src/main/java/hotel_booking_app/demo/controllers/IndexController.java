@@ -1,14 +1,12 @@
 package hotel_booking_app.demo.controllers;
 
-
 import hotel_booking_app.demo.entities.Hotel;
 import hotel_booking_app.demo.services.HotelService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 public class IndexController {
@@ -20,11 +18,15 @@ public class IndexController {
     }
 
     @GetMapping("/")
-    public String home(@RequestParam(value = "location", required = false) String location, Model model) {
+    public String home(@RequestParam(value = "location", required = false) String location,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "3") int size,
+                       Model model) {
 
-        List<Hotel> hotels = hotelService.searchHotels(location);
+        Page<Hotel> hotelPage = hotelService.getHotelsPaged(location, page, size);
 
-        model.addAttribute("hotels", hotels);
+        model.addAttribute("hotelPage", hotelPage);
+        model.addAttribute("hotels", hotelPage.getContent());
         model.addAttribute("searchLocation", location);
 
         return "home";

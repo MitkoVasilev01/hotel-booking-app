@@ -170,6 +170,27 @@
         </div>
     </div>
 </div>
+<nav th:if="${hotelPage.totalPages > 1}" aria-label="Page navigation" class="mt-5">
+    <ul class="pagination justify-content-center">
+
+        <li class="page-item" th:classappend="${!hotelPage.hasPrevious()} ? 'disabled'">
+            <a class="page-link" th:href="@{/(location=${searchLocation}, page=${hotelPage.number - 1})}" aria-label="Previous">
+                <span aria-hidden="true">&laquo; Назад</span>
+            </a>
+        </li>
+
+        <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, hotelPage.totalPages - 1)}"
+            th:classappend="${pageNumber == hotelPage.number} ? 'active'">
+            <a class="page-link" th:href="@{/(location=${searchLocation}, page=${pageNumber})}" th:text="${pageNumber + 1}">1</a>
+        </li>
+        <li class="page-item" th:classappend="${!hotelPage.hasNext()} ? 'disabled'">
+            <a class="page-link" th:href="@{/(location=${searchLocation}, page=${hotelPage.number + 1})}" aria-label="Next">
+                <span aria-hidden="true">Напред &raquo;</span>
+            </a>
+        </li>
+
+    </ul>
+</nav>
 
 <footer class="bg-dark text-white text-center py-3 mt-5">
     <p class="mb-0">&copy; 2025 Hotel Booking System. All rights reserved.</p>

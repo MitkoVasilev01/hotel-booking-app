@@ -5,6 +5,10 @@ import hotel_booking_app.demo.entities.Hotel;
 import hotel_booking_app.demo.repositories.HotelRepository;
 import hotel_booking_app.demo.util.FileUploadUtil;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -27,12 +31,6 @@ public class HotelService {
         return hotelRepository.findAll();
     }
 
-    public List<Hotel> searchHotels(String location) {
-        if (location == null || location.isEmpty()) {
-            return hotelRepository.findAll();
-        }
-        return hotelRepository.findByLocationContainingIgnoreCase(location);
-    }
 
     public Optional<Hotel> getHotelById(UUID id) {
         return hotelRepository.findById(id);
@@ -91,10 +89,17 @@ public class HotelService {
         hotel.setName(dto.getName());
         hotel.setDescription(dto.getDescription());
         hotel.setCategory(dto.getCategory());
-        hotel.setAmenities(parseTextToSet(dto.getAmenitiesText()));
-        hotel.setGalleryImages(parseTextToSet(dto.getGalleryText()));
         hotel.setLocation(dto.getLocation());
         hotel.setAddress(dto.getAddress());
+        hotel.setPricePerNight(dto.getPricePerNight());
+
+        if (dto.getAmenitiesText() != null && !dto.getAmenitiesText().trim().isEmpty()) {
+            hotel.setAmenities(parseTextToSet(dto.getAmenitiesText()));
+        }
+
+        if (dto.getGalleryText() != null && !dto.getGalleryText().trim().isEmpty()) {
+            hotel.setGalleryImages(parseTextToSet(dto.getGalleryText()));
+        }
 
         hotelRepository.save(hotel);
     }
@@ -114,5 +119,15 @@ public class HotelService {
             }
         }
         return resultSet;
+    }
+
+    public Page<Hotel> getHotelsPaged(String location, int page, int size) {
+        // Конструираме автоматична заявка, сортирана по име на хотела възходящо
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+
+        if (location == null || location.isEmpty()) {
+            return hotelRepository.findAll(pageable); // Вграден метод в JpaRepository!
+        }
+        return hotelRepository.findByLocationContainingIgnoreCase(location, pageable);
     }
 }

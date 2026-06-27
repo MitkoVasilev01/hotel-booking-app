@@ -12,8 +12,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Enumeration;
 import java.util.Set;
 
 @Component
@@ -72,8 +70,42 @@ public class Datalitializer implements CommandLineRunner {
             ));
             hotelRepository.save(hotel2);
 
+            Hotel hotel3 = new Hotel();
+            hotel3.setName("Rila Hotel Borovets");
+            hotel3.setLocation("Borovets");
+            hotel3.setCategory((HotelCategory.LUXURY));
+            hotel3.setAddress("Borovets Resort, Rila Mountain");
+            hotel3.setDescription("Модерен ски-ин/ски-аут хотел в подножието на ски пистите в Боровец с невероятен спа център.");
+            hotel3.setPricePerNight(180.0);
+            hotel3.setImageUrl("https://cf.bstatic.com/xdata/images/hotel/max1024x768/107676800.jpg?k=cd1edab15be27bd3ca6251101cd2194700773da784373c2eb9e5dbb161906981&o=");
+            hotel3.setAmenities(Set.of("WiFi", "Ski School", "SPA", "Indoor Pool", "Bar"));
+            hotel3.setGalleryImages(Set.of(
+                    "https://d3e3f0l0f5xt1p.cloudfront.net/hotelrila-2362005002/cms/cache/v2/63906082c5d67.jpg/900x550/fit/80/8bc6fc68a4493b22ba2c50e24b589029.jpg",
+                    "https://d3e3f0l0f5xt1p.cloudfront.net/hotelrila-2362005002/cms/cache/v2/63906082a128d.jpg/1920x1080/fit/80/7b690ef9a1bf80156b824658bc519ca4.jpg",
+                    "https://d3e3f0l0f5xt1p.cloudfront.net/hotelrila-2362005002/cms/cache/v2/63906081cc22f.jpg/1920x1080/fit/80/fb43f5c26743f9c47f85fab4cd1880d7.jpg",
+                    "https://cf.bstatic.com/xdata/images/hotel/max1024x768/64087326.jpg?k=ae220099d77a614b9b64bcfbe8acbe57b30a05901522ad55927089579eca7594&o=",
+                    "https://cf.bstatic.com/xdata/images/hotel/max1024x768/64087180.jpg?k=610c48a6df79dec884cf0806d030f63e0dd151032f345c62a264ce3780ec7068&o="
 
+            ));
+            hotelRepository.save(hotel3);
+
+            Hotel hotel4 = new Hotel();
+            hotel4.setName("Astera Resort & Spa");
+            hotel4.setLocation("Golden Sands");
+            hotel4.setCategory(HotelCategory.LUXURY);
+            hotel4.setAddress("Main Promenade, Golden Sands");
+            hotel4.setDescription("Прекрасен хотел на първа линия до морето с частен плаж, аквапарк и анимация за деца.");
+            hotel4.setPricePerNight(130.0);
+            hotel4.setImageUrl("https://asterahotel.com/media/image_slide/images/f20670537514b35bc44249b0b028352ffbb01756.jpg");
+            hotel4.setAmenities(Set.of("WiFi", "Beach Access", "All Inclusive", "Kids Club", "Gym"));
+            hotel4.setGalleryImages(Set.of("https://asterahotel.com/media/image_slide/images/84596a07d265f0d3a463ee03f1b853ccb448e118.jpg",
+                    "https://asterahotel.com/media/image_slide/images/729d629ad66d5d58856cd7f399d65758c5f7b3fc.JPG"
+            ));
+            hotelRepository.save(hotel4);
+
+            log.info("DATABASE SEEDER: Хотелите бяха заредени успешно!");
         }
+
         if (userRepository.count() == 0) {
             User admin = new User();
             admin.setName("admin");
